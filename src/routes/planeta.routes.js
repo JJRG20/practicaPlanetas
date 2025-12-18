@@ -3,7 +3,9 @@ const router = express.Router();
 const planetaController = require('../controllers/planeta.controller');
 
 router.get('/', planetaController.getAllplaneta);
-router.get('/:id', planetaController.getplanetaByidPlanet);
+router.get('/:idPlanet', planetaController.getplanetaByidPlanet);
 router.post('/', planetaController.createplaneta);
+router.patch('/:idPlanet/luna/:idLuna', planetaController.updatelunaRelation);
+
 
 module.exports = router;

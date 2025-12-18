@@ -24,16 +24,16 @@ exports.getAllplaneta = async (req, res) => {
 };
 
 exports.getplanetaByidPlanet = async (req, res) => {
-  const id = Number(req.params.id);
+  const idPlanet = Number(req.params.idPlanet);
 
-  if (!Number.isInteger(id)) {
+  if (!Number.isInteger(idPlanet)) {
     return res.status(400).json({ error: 'ID inválido' });
   }
 
   try {
     const [planetaRows] = await sistemaplanetas.query(
       'SELECT * FROM planeta WHERE idPlanet = ?',
-      [id]
+      [idPlanet]
     );
 
     if (planetaRows.length === 0) {
@@ -42,7 +42,7 @@ exports.getplanetaByidPlanet = async (req, res) => {
 
     const [lunaRows] = await sistemaplanetas.query(
       'SELECT * FROM luna WHERE idPlanet = ?',
-      [id]
+      [idPlanet]
     );
 
     res.json({
@@ -99,7 +99,7 @@ exports.createplaneta = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('ERROR TABLA1:', error);
+    console.error('ERROR planeta:', error);
     res.status(500).json({
       error: 'Error al crear registro',
       detalle: error.message
@@ -107,4 +107,53 @@ exports.createplaneta = async (req, res) => {
   }
 };
 
+exports.updatelunaRelation = async (req, res) => {
+  const idPlanet = Number(req.params.idPlanet);
+  const idLuna = Number(req.params.idLuna);
+
+  // Validaciones básicas
+  if (!Number.isInteger(idPlanet) || !Number.isInteger(idLuna)) {
+    return res.status(400).json({ error: 'Parámetros inválidos' });
+  }
+
+  try {
+    // Verificar que exista planeta
+    const [planeta] = await sistemaplanetas.query(
+      'SELECT idPlanet FROM planeta WHERE idPlanet = ?',
+      [idPlanet]
+    );
+
+    if (planeta.length === 0) {
+      return res.status(404).json({ error: 'planeta no existe' });
+    }
+
+    // Verificar que exista luna
+    const [luna] = await sistemaplanetas.query(
+      'SELECT idLuna FROM luna WHERE idLuna = ?',
+      [idLuna]
+    );
+
+    if (luna.length === 0) {
+      return res.status(404).json({ error: 'luna no existe' });
+    }
+
+    // Actualizar relación
+    await sistemaplanetas.query(
+      'UPDATE luna SET idPlanet = ? WHERE idLuna = ?',
+      [idPlanet, idLuna]
+    );
+
+    res.json({
+      mensaje: 'Relación actualizada correctamente',
+      luna: {
+        idLuna: idLuna,
+        idPlanet: idPlanet
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al actualizar la relación' });
+  }
+};
 
