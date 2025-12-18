@@ -58,3 +58,48 @@ exports.getplanetaByidPlanet = async (req, res) => {
     });
   }
 };
+
+exports.createplaneta = async (req, res) => {
+  const { name, diameter, weight, sunDist, time } = req.body;
+
+  // Validaciones básicas
+  if (!name || typeof name !== 'string') {
+    return res.status(400).json({ error: 'name inválido' });
+  }
+
+  if (typeof diameter !== 'number') {
+    return res.status(400).json({ error: 'diameter inválido' });
+  }
+
+  if (typeof weight !== 'number') {
+    return res.status(400).json({ error: 'weight inválido' });
+  }
+
+  if (typeof sunDist !== 'number') {
+    return res.status(400).json({ error: 'sunDist inválido' });
+  }
+
+  if (typeof time !== 'number') {
+    return res.status(400).json({ error: 'time inválido' });
+  }
+
+  try {
+    const [result] = await db.query(
+      'INSERT INTO planeta (name, diameter, weight, sunDist, time) VALUES (?, ?, ?, ?, ?)',
+      [name, diameter, weight, sunDist, time]
+    );
+
+    res.status(201).json({
+      idPlanet: result.insertId,
+      name,
+      diameter,
+      weight,
+      sunDist,
+      time
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al crear registro' });
+  }
+};
