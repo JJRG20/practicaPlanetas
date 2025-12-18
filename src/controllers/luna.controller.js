@@ -38,6 +38,7 @@ exports.createluna = async (req, res) => {
     );
 
     res.status(201).json({
+      idLuna: result.insertId,
       name,
       diameter,
       weight,

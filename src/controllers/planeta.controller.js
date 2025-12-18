@@ -84,7 +84,7 @@ exports.createplaneta = async (req, res) => {
   }
 
   try {
-    const [result] = await db.query(
+    const [result] = await sistemaplanetas.query(
       'INSERT INTO planeta (name, diameter, weight, sunDist, time) VALUES (?, ?, ?, ?, ?)',
       [name, diameter, weight, sunDist, time]
     );
@@ -99,7 +99,12 @@ exports.createplaneta = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al crear registro' });
+    console.error('ERROR TABLA1:', error);
+    res.status(500).json({
+      error: 'Error al crear registro',
+      detalle: error.message
+    });
   }
 };
+
+
