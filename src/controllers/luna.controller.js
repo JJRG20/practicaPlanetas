@@ -128,3 +128,42 @@ exports.restoreluna = async (req, res) => {
     res.status(500).json({ error: 'Error al restaurar' });
   }
 };
+
+exports.updateluna = async (req, res) => {
+  const idLuna = Number(req.params.idLuna);
+  const { name, diameter, weight } = req.body;
+
+  // Validaciones
+  if (!Number.isInteger(idLuna)) {
+    return res.status(400).json({ error: 'ID inválido' });
+  }
+
+  if (!name || typeof diameter !== 'number' || typeof weight !== 'number') {
+    return res.status(400).json({
+      error: 'Todos los campos son obligatorios (PUT)'
+    });
+  }
+
+  try {
+    const [result] = await sistemaplanetas.query(
+      `
+      UPDATE luna
+      SET name = ?, diameter = ?, weight = ?
+      WHERE idLuna = ? AND deletedAt IS NULL
+      `,
+      [name, diameter, weight, idLuna]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        error: 'Registro no encontrado o eliminado'
+      });
+    }
+
+    res.json({ mensaje: 'Registro actualizado correctamente' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al actualizar luna' });
+  }
+};
