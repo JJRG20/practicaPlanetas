@@ -3,10 +3,10 @@ const sistemaplanetas = require('../config/sistemaplanetas');
 exports.getAllplaneta = async (req, res) => {
   try {
     // 1. Traemos todo de planeta
-    const [planetaRows] = await sistemaplanetas.query('SELECT * FROM planeta');
+    const [planetaRows] = await sistemaplanetas.query('SELECT * FROM planeta WHERE deletedAt IS NULL');
 
     // 2. Traemos todo de luna
-    const [lunaRows] = await sistemaplanetas.query('SELECT * FROM luna');
+    const [lunaRows] = await sistemaplanetas.query('SELECT * FROM luna WHERE deletedAt IS NULL');
 
     // 3. Asociamos luna a cada planeta
     const resultado = planetaRows.map(t1 => {
@@ -32,7 +32,7 @@ exports.getplanetaByidPlanet = async (req, res) => {
 
   try {
     const [planetaRows] = await sistemaplanetas.query(
-      'SELECT * FROM planeta WHERE idPlanet = ?',
+      'SELECT * FROM planeta WHERE idPlanet = ? AND deletedAt IS NULL',
       [idPlanet]
     );
 
@@ -41,7 +41,7 @@ exports.getplanetaByidPlanet = async (req, res) => {
     }
 
     const [lunaRows] = await sistemaplanetas.query(
-      'SELECT * FROM luna WHERE idPlanet = ?',
+      'SELECT * FROM luna WHERE idPlanet = ? AND deletedAt IS NULL',
       [idPlanet]
     );
 
