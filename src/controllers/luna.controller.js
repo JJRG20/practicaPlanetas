@@ -50,3 +50,31 @@ exports.createluna = async (req, res) => {
     res.status(500).json({ error: 'Error al crear registro en luna' });
   }
 };
+
+exports.deleteluna = async (req, res) => {
+  const idLuna = Number(req.params.idLuna);
+
+  if (!Number.isInteger(idLuna)) {
+    return res.status(400).json({ error: 'ID inválido' });
+  }
+
+  try {
+    const [result] = await sistemaplanetas.query(
+      'DELETE FROM luna WHERE idLuna = ?',
+      [idLuna]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Registro no encontrado' });
+    }
+
+    res.json({
+      mensaje: 'Registro de tabla2 eliminado',
+      idLuna
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al eliminar registro' });
+  }
+};

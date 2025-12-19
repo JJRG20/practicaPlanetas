@@ -165,7 +165,7 @@ exports.deleteplaneta = async (req, res) => {
   }
 
   try {
-    const [result] = await sistemaplaneta.query(
+    const [result] = await sistemaplanetas.query(
       'DELETE FROM planet WHERE idPlanet = ?',
       [idPlanet]
     );
