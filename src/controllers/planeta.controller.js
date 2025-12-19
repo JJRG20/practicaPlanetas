@@ -175,8 +175,7 @@ exports.deleteplaneta = async (req, res) => {
     }
 
     res.json({
-      mensaje: 'Registro eliminado correctamente',
-      idPlanet
+      mensaje: 'Registro de planeta y sus lunas eliminado correctamente',
     });
 
   } catch (error) {
