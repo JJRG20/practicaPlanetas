@@ -69,7 +69,7 @@ exports.deleteluna = async (req, res) => {
     }
 
     res.json({
-      mensaje: 'Registro de tabla2 eliminado',
+      mensaje: 'Registro de luna eliminado',
       idLuna
     });
 
