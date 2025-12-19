@@ -7,5 +7,4 @@ router.get('/:idPlanet', planetaController.getplanetaByidPlanet);
 router.post('/', planetaController.createplaneta);
 router.patch('/:idPlanet/luna/:idLuna', planetaController.updatelunaRelation);
 
-
 module.exports = router;
