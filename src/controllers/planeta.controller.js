@@ -267,3 +267,42 @@ exports.restoreplaneta = async (req, res) => {
     connection.release();
   }
 };
+
+exports.updateplaneta = async (req, res) => {
+  const idPlanet = Number(req.params.idPlanet);
+  const { name, diameter, weight, sunDist, time } = req.body;
+
+  // Validaciones
+  if (!Number.isInteger(idPlanet)) {
+    return res.status(400).json({ error: 'ID inválido' });
+  }
+
+  if (!name || typeof diameter !== 'number' || typeof weight !== 'number' || typeof sunDist !== 'number' || typeof time !== 'number') {
+    return res.status(400).json({
+      error: 'Todos los campos son obligatorios (PUT)'
+    });
+  }
+
+  try {
+    const [result] = await sistemaplanetas.query(
+      `
+      UPDATE planeta
+      SET name = ?, diameter = ?, weight = ?, sunDist = ?, time = ?
+      WHERE idPlanet = ? AND deletedAt IS NULL
+      `,
+      [name, diameter, weight, sunDist, time, idPlanet]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        error: 'Registro no encontrado o eliminado'
+      });
+    }
+
+    res.json({ mensaje: 'Registro actualizado correctamente' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al actualizar planeta' });
+  }
+};
