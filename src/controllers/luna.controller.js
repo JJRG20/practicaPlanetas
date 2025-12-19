@@ -1,5 +1,35 @@
 const sistemaplanetas = require('../config/sistemaplanetas');
 
+exports.getlunaByidLuna = async (req, res) => {
+  const idLuna = Number(req.params.idLuna);
+
+  if (!Number.isInteger(idLuna)) {
+    return res.status(400).json({ error: 'ID inválido' });
+  }
+
+  try {
+    const [lunaRows] = await sistemaplanetas.query(
+      'SELECT * FROM luna WHERE idLuna = ? AND deletedAt IS NULL',
+      [idLuna]
+    );
+
+    if (lunaRows.length === 0) {
+      return res.status(404).json({ error: 'No encontrado' });
+    }
+
+    res.json({
+      ...lunaRows[0]
+    });
+
+  } catch (error) {
+    console.error('ERROR REAL:', error);
+    res.status(500).json({
+      error: 'Error al obtener el registro',
+      detalle: error.message
+    });
+  }
+};
+
 exports.createluna = async (req, res) => {
   const { name, diameter, weight, idPlanet } = req.body;
 

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const lunaController = require('../controllers/luna.controller');
 
+router.get('/:idLuna', lunaController.getlunaByidLuna);
 router.post('/', lunaController.createluna);
 router.delete('/:idLuna', lunaController.deleteluna);
 router.patch('/:idLuna/soft-delete', lunaController.softDeleteluna);
