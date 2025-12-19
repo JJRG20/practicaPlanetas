@@ -6,5 +6,7 @@ router.get('/', planetaController.getAllplaneta);
 router.get('/:idPlanet', planetaController.getplanetaByidPlanet);
 router.post('/', planetaController.createplaneta);
 router.patch('/:idPlanet/luna/:idLuna', planetaController.updatelunaRelation);
+router.delete('/:idPlanet', planetaController.deleteplaneta);
+
 
 module.exports = router;

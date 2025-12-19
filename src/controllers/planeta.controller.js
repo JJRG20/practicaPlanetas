@@ -157,3 +157,30 @@ exports.updatelunaRelation = async (req, res) => {
   }
 };
 
+exports.deleteplaneta = async (req, res) => {
+  const idPlanet = Number(req.params.idPlanet);
+
+  if (!Number.isInteger(idPlanet)) {
+    return res.status(400).json({ error: 'ID inválido' });
+  }
+
+  try {
+    const [result] = await sistemaplaneta.query(
+      'DELETE FROM planet WHERE idPlanet = ?',
+      [idPlanet]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Registro no encontrado' });
+    }
+
+    res.json({
+      mensaje: 'Registro eliminado correctamente',
+      idPlanet
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al eliminar registro' });
+  }
+};
