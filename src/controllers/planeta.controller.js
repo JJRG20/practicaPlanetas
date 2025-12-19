@@ -183,3 +183,45 @@ exports.deleteplaneta = async (req, res) => {
     res.status(500).json({ error: 'Error al eliminar registro' });
   }
 };
+
+exports.softDeleteplaneta = async (req, res) => {
+  const idPlanet = Number(req.params.idPlanet);
+
+  if (!Number.isInteger(idPlanet)) {
+    return res.status(400).json({ error: 'ID inválido' });
+  }
+
+  const connection = await sistemaplanetas.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    // Soft delete planeta
+    const [resplaneta] = await connection.query(
+      'UPDATE planeta SET deletedAt = NOW() WHERE idPlanet = ? AND deletedAt IS NULL',
+      [idPlanet]
+    );
+
+    if (resplaneta.affectedRows === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Registro no encontrado o ya eliminado' });
+    }
+
+    // Soft delete luna asociadas
+    await connection.query(
+      'UPDATE luna SET deletedAt = NOW() WHERE idPlanet = ? AND deletedAt IS NULL',
+      [idPlanet]
+    );
+
+    await connection.commit();
+
+    res.json({ mensaje: 'Soft delete aplicado a planeta y luna asociadas' });
+
+  } catch (error) {
+    await connection.rollback();
+    console.error(error);
+    res.status(500).json({ error: 'Error en soft delete' });
+  } finally {
+    connection.release();
+  }
+};
