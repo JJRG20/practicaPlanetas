@@ -40,37 +40,16 @@ exports.getplanetaByidPlanet = async (req, res) => {
 };
 
 exports.createplaneta = async (req, res) => {
-  const { name, diameter, weight, sunDist, time } = req.body;
-
-  // Validaciones básicas
-  if (!name || typeof name !== 'string') {
-    return res.status(400).json({ error: 'name inválido' });
-  }
-
-  if (typeof diameter !== 'number') {
-    return res.status(400).json({ error: 'diameter inválido' });
-  }
-
-  if (typeof weight !== 'number') {
-    return res.status(400).json({ error: 'weight inválido' });
-  }
-
-  if (typeof sunDist !== 'number') {
-    return res.status(400).json({ error: 'sunDist inválido' });
-  }
-
-  if (typeof time !== 'number') {
-    return res.status(400).json({ error: 'time inválido' });
-  }
-
   try {
-    const [result] = await sistemaplanetas.query(
-      'INSERT INTO planeta (name, diameter, weight, sunDist, time) VALUES (?, ?, ?, ?, ?)',
-      [name, diameter, weight, sunDist, time]
-    );
+    const { name, diameter, weight, sunDist, time } = req.body;
 
-    res.status(201).json({
-      idPlanet: result.insertId,
+    if (!name) {
+      return res.status(400).json({
+        message: 'llene todos los datos obligatorios'
+      });
+    }
+
+    const nuevo = await planeta.create({
       name,
       diameter,
       weight,
@@ -78,14 +57,16 @@ exports.createplaneta = async (req, res) => {
       time
     });
 
+    res.status(201).json(nuevo);
   } catch (error) {
-    console.error('ERROR planeta:', error);
+    console.error(error);
     res.status(500).json({
-      error: 'Error al crear registro',
-      detalle: error.message
+      message: 'Error al crear el registro'
     });
   }
 };
+
+
 
 exports.updatelunaRelation = async (req, res) => {
   const idPlanet = Number(req.params.idPlanet);
