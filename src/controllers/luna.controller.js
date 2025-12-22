@@ -103,27 +103,27 @@ exports.softDeleteluna = async (req, res) => {
 };
 
 exports.restoreluna = async (req, res) => {
-  const idLuna = Number(req.params.idLuna);
-
-  if (!Number.isInteger(idLuna)) {
-    return res.status(400).json({ error: 'ID inválido' });
-  }
-
   try {
-    const [result] = await sistemaplanetas.query(
-      'UPDATE luna SET deletedAt = NULL WHERE idLuna = ? AND deletedAt IS NOT NULL',
-      [idLuna]
-    );
+    const { idLuna } = req.params;
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Registro no eliminado o no existe' });
+    const restaurado = await luna.restore({
+      where: { idLuna }
+    });
+
+    if (!restaurado) {
+      return res.status(404).json({
+        message: 'Registro no encontrado o no eliminado'
+      });
     }
 
-    res.json({ mensaje: 'Registro de luna restaurado correctamente' });
-
+    res.json({
+      message: 'Registro de luna restaurado correctamente'
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al restaurar' });
+    res.status(500).json({
+      message: 'Error al restaurar el registro'
+    });
   }
 };
 

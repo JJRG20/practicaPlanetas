@@ -178,44 +178,27 @@ exports.softDeleteplaneta = async (req, res) => {
 };
 
 exports.restoreplaneta = async (req, res) => {
-  const idPlanet = Number(req.params.idPlanet);
-
-  if (!Number.isInteger(idPlanet)) {
-    return res.status(400).json({ error: 'ID inválido' });
-  }
-
-  const connection = await sistemaplanetas.getConnection();
-
   try {
-    await connection.beginTransaction();
+    const { idPlanet } = req.params;
 
-    // Restore planeta
-    const [resplaneta] = await connection.query(
-      'UPDATE planeta SET deletedAt = NULL WHERE idPlanet = ? AND deletedAt IS NOT NULL',
-      [idPlanet]
-    );
+    const restaurado = await planeta.restore({
+      where: { idPlanet }
+    });
 
-    if (resplaneta.affectedRows === 0) {
-      await connection.rollback();
-      return res.status(404).json({ error: 'Registro no estaba eliminado o no existe' });
+    if (!restaurado) {
+      return res.status(404).json({
+        message: 'Registro no encontrado o no eliminado'
+      });
     }
 
-    // Restore luna asociadas
-    await connection.query(
-      'UPDATE luna SET deletedAt = NULL WHERE idPlanet = ? AND deletedAt IS NOT NULL',
-      [idPlanet]
-    );
-
-    await connection.commit();
-
-    res.json({ mensaje: 'Registro restaurado correctamente' });
-
+    res.json({
+      message: 'Registro de planeta restaurado correctamente'
+    });
   } catch (error) {
-    await connection.rollback();
     console.error(error);
-    res.status(500).json({ error: 'Error al restaurar' });
-  } finally {
-    connection.release();
+    res.status(500).json({
+      message: 'Error al restaurar el registro'
+    });
   }
 };
 
