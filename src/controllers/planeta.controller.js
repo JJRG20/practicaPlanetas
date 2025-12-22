@@ -75,52 +75,39 @@ exports.createplaneta = async (req, res) => {
 
 
 exports.updatelunaRelation = async (req, res) => {
-  const idPlanet = Number(req.params.idPlanet);
-  const idLuna = Number(req.params.idLuna);
-
-  // Validaciones básicas
-  if (!Number.isInteger(idPlanet) || !Number.isInteger(idLuna)) {
-    return res.status(400).json({ error: 'Parámetros inválidos' });
-  }
-
   try {
-    // Verificar que exista planeta
-    const [planeta] = await sistemaplanetas.query(
-      'SELECT idPlanet FROM planeta WHERE idPlanet = ?',
-      [idPlanet]
-    );
+    const { idPlanet, idLuna } = req.params;
 
-    if (planeta.length === 0) {
-      return res.status(404).json({ error: 'planeta no existe' });
+    // Verificar que exista el nuevo planeta
+    const registroP = await planeta.findByPk(idPlanet);
+    if (!registroP) {
+      return res.status(404).json({
+        message: 'planeta destino no existe'
+      });
     }
 
     // Verificar que exista luna
-    const [luna] = await sistemaplanetas.query(
-      'SELECT idLuna FROM luna WHERE idLuna = ?',
-      [idLuna]
-    );
-
-    if (luna.length === 0) {
-      return res.status(404).json({ error: 'luna no existe' });
+    const registroL = await luna.findByPk(idLuna);
+    if (!registroL) {
+      return res.status(404).json({
+        message: 'Registro de luna no existe'
+      });
     }
 
-    // Actualizar relación
-    await sistemaplanetas.query(
-      'UPDATE luna SET idPlanet = ? WHERE idLuna = ?',
-      [idPlanet, idLuna]
-    );
+    // Actualizar SOLO la relación
+    registroL.idPlanet = idPlanet;
+    await registroL.save();
 
     res.json({
-      mensaje: 'Relación actualizada correctamente',
-      luna: {
-        idLuna: idLuna,
-        idPlanet: idPlanet
-      }
+      message: 'Asociación corregida correctamente',
+      luna
     });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al actualizar la relación' });
+    res.status(500).json({
+      message: 'Error al corregir la asociación'
+    });
   }
 };
 
