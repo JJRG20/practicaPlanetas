@@ -1,6 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
+const luna = require('./luna');
+
 const planeta = sequelize.define('planeta', {
   idPlanet: {
     type: DataTypes.INTEGER,
@@ -27,6 +29,13 @@ const planeta = sequelize.define('planeta', {
   tableName: 'planeta',
   timestamps: true,
   paranoid: true
+});
+
+planeta.addHook('beforeDestroy', async (planeta, options) => {
+  await luna.destroy({
+    where: { idPlanet: planeta.idPlanet },
+    transaction: options.transaction
+  });
 });
 
 module.exports = planeta;

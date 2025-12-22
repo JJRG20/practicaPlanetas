@@ -156,7 +156,8 @@ exports.softDeleteplaneta = async (req, res) => {
     const { idPlanet } = req.params;
 
     const eliminado = await planeta.destroy({
-      where: { idPlanet }
+      where: { idPlanet },
+      individualHooks: true
     });
 
     if (!eliminado) {

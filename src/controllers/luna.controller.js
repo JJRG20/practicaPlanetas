@@ -1,4 +1,4 @@
-const { planeta, luna } = require('../models');
+const { luna } = require('../models');
 
 exports.getlunaByidLuna = async (req, res) => {
   try {
