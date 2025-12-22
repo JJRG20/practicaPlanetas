@@ -1,31 +1,24 @@
-const sistemaplanetas = require('../config/sistemaplanetas');
+const { planeta, luna } = require('../models');
 
 exports.getlunaByidLuna = async (req, res) => {
-  const idLuna = Number(req.params.idLuna);
-
-  if (!Number.isInteger(idLuna)) {
-    return res.status(400).json({ error: 'ID inválido' });
-  }
-
   try {
-    const [lunaRows] = await sistemaplanetas.query(
-      'SELECT * FROM luna WHERE idLuna = ? AND deletedAt IS NULL',
-      [idLuna]
-    );
+    const { idLuna } = req.params;
 
-    if (lunaRows.length === 0) {
-      return res.status(404).json({ error: 'No encontrado' });
-    }
+    const registro = await luna.findByPk(idLuna, {
 
-    res.json({
-      ...lunaRows[0]
     });
 
+    if (!registro) {
+      return res.status(404).json({
+        message: 'Registro no encontrado'
+      });
+    }
+
+    res.json(registro);
   } catch (error) {
-    console.error('ERROR REAL:', error);
+    console.error(error);
     res.status(500).json({
-      error: 'Error al obtener el registro',
-      detalle: error.message
+      message: 'Error al obtener el registro'
     });
   }
 };

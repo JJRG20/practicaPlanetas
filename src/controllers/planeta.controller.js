@@ -17,37 +17,24 @@ exports.getAllplaneta = async (req, res) => {
 
 
 exports.getplanetaByidPlanet = async (req, res) => {
-  const idPlanet = Number(req.params.idPlanet);
-
-  if (!Number.isInteger(idPlanet)) {
-    return res.status(400).json({ error: 'ID inválido' });
-  }
-
   try {
-    const [planetaRows] = await sistemaplanetas.query(
-      'SELECT * FROM planeta WHERE idPlanet = ? AND deletedAt IS NULL',
-      [idPlanet]
-    );
+    const { idPlanet } = req.params;
 
-    if (planetaRows.length === 0) {
-      return res.status(404).json({ error: 'No encontrado' });
-    }
-
-    const [lunaRows] = await sistemaplanetas.query(
-      'SELECT * FROM luna WHERE idPlanet = ? AND deletedAt IS NULL',
-      [idPlanet]
-    );
-
-    res.json({
-      ...planetaRows[0],
-      luna: lunaRows
+    const registro = await planeta.findByPk(idPlanet, {
+      include: luna
     });
 
+    if (!registro) {
+      return res.status(404).json({
+        message: 'Registro no encontrado'
+      });
+    }
+
+    res.json(registro);
   } catch (error) {
-    console.error('ERROR REAL:', error);
+    console.error(error);
     res.status(500).json({
-      error: 'Error al obtener el registro',
-      detalle: error.message
+      message: 'Error al obtener el registro'
     });
   }
 };
