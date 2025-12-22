@@ -20,11 +20,11 @@ const luna = sequelize.define('luna', {
   idPlanet: {
     type: DataTypes.INTEGER
   }
+  
 }, {
   tableName: 'luna',
-  timestamps: false,
-  paranoid: true,
-  deletedAt: 'deletedAt'
+  timestamps: true,
+  paranoid: true
 });
 
 module.exports = luna;

@@ -25,9 +25,8 @@ const planeta = sequelize.define('planeta', {
   }
 }, {
   tableName: 'planeta',
-  timestamps: false,
-  paranoid: true,
-  deletedAt: 'deletedAt'
+  timestamps: true,
+  paranoid: true
 });
 
 module.exports = planeta;

@@ -3,7 +3,9 @@ const { planeta, luna } = require('../models');
 exports.getAllplaneta = async (req, res) => {
   try {
     const data = await planeta.findAll({
-      include: luna
+      include: {
+        model: luna
+      }
     });
 
     res.json(data);
@@ -21,7 +23,9 @@ exports.getplanetaByidPlanet = async (req, res) => {
     const { idPlanet } = req.params;
 
     const registro = await planeta.findByPk(idPlanet, {
-      include: luna
+      include: {
+        model: luna
+      }
     });
 
     if (!registro) {
