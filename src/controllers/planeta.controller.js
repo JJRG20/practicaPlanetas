@@ -189,40 +189,36 @@ exports.restoreplaneta = async (req, res) => {
 };
 
 exports.updateplaneta = async (req, res) => {
-  const idPlanet = Number(req.params.idPlanet);
-  const { name, diameter, weight, sunDist, time } = req.body;
-
-  // Validaciones
-  if (!Number.isInteger(idPlanet)) {
-    return res.status(400).json({ error: 'ID inválido' });
-  }
-
-  if (!name || typeof diameter !== 'number' || typeof weight !== 'number' || typeof sunDist !== 'number' || typeof time !== 'number') {
-    return res.status(400).json({
-      error: 'Todos los campos son obligatorios (PUT)'
-    });
-  }
-
   try {
-    const [result] = await sistemaplanetas.query(
-      `
-      UPDATE planeta
-      SET name = ?, diameter = ?, weight = ?, sunDist = ?, time = ?
-      WHERE idPlanet = ? AND deletedAt IS NULL
-      `,
-      [name, diameter, weight, sunDist, time, idPlanet]
-    );
+    const { idPlanet } = req.params;
+    const { name, diameter, weight, sunDist, time } = req.body;
 
-    if (result.affectedRows === 0) {
+    // Buscar registro (aunque esté soft-deleted)
+    const registroP = await planeta.findByPk(idPlanet, { paranoid: false });
+    if (!registroP) {
       return res.status(404).json({
-        error: 'Registro no encontrado o eliminado'
+        message: 'Registro de planeta no encontrado'
       });
     }
 
-    res.json({ mensaje: 'Registro actualizado correctamente' });
+    // PUT = reemplazo completo
+    await registroP.update({
+      name,
+      diameter,
+      weight,
+      sunDist,
+      time
+    });
+
+    res.json({
+      message: 'Registro actualizado completamente',
+      registroP
+    });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al actualizar planeta' });
+    res.status(500).json({
+      message: 'Error al actualizar el registro'
+    });
   }
 };

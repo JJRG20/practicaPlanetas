@@ -128,40 +128,44 @@ exports.restoreluna = async (req, res) => {
 };
 
 exports.updateluna = async (req, res) => {
-  const idLuna = Number(req.params.idLuna);
-  const { name, diameter, weight } = req.body;
-
-  // Validaciones
-  if (!Number.isInteger(idLuna)) {
-    return res.status(400).json({ error: 'ID inválido' });
-  }
-
-  if (!name || typeof diameter !== 'number' || typeof weight !== 'number') {
-    return res.status(400).json({
-      error: 'Todos los campos son obligatorios (PUT)'
-    });
-  }
-
   try {
-    const [result] = await sistemaplanetas.query(
-      `
-      UPDATE luna
-      SET name = ?, diameter = ?, weight = ?
-      WHERE idLuna = ? AND deletedAt IS NULL
-      `,
-      [name, diameter, weight, idLuna]
-    );
+    const { idLuna, idPlanet } = req.params;
+    const { name, diameter, weight } = req.body;
 
-    if (result.affectedRows === 0) {
+    // Buscar registro (aunque esté soft-deleted)
+    const registroL = await luna.findByPk(idLuna, { paranoid: false });
+    if (!registroL) {
       return res.status(404).json({
-        error: 'Registro no encontrado o eliminado'
+        message: 'Registro de luna no encontrado'
       });
     }
 
-    res.json({ mensaje: 'Registro actualizado correctamente' });
+    // Validar FK (planeta)
+    if (idPlanet !== undefined) {
+      const registroP = await planeta.findByPk(idPlanet);
+      if (!registroP) {
+        return res.status(400).json({
+          message: 'El socio indicado no existe en planeta'
+        });
+      }
+    }
+
+    // PUT = reemplazo completo
+    await registroL.update({
+      name,
+      diameter,
+      weight
+    });
+
+    res.json({
+      message: 'Registro actualizado completamente',
+      registroL
+    });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al actualizar luna' });
+    res.status(500).json({
+      message: 'Error al actualizar el registro'
+    });
   }
 };
