@@ -78,27 +78,27 @@ exports.deleteluna = async (req, res) => {
 };
 
 exports.softDeleteluna = async (req, res) => {
-  const idLuna = Number(req.params.idLuna);
-
-  if (!Number.isInteger(idLuna)) {
-    return res.status(400).json({ error: 'ID inválido' });
-  }
-
   try {
-    const [result] = await sistemaplanetas.query(
-      'UPDATE luna SET deletedAt = NOW() WHERE idLuna = ? AND deletedAt IS NULL',
-      [idLuna]
-    );
+    const { idLuna } = req.params;
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Registro no encontrado o ya eliminado' });
+    const eliminado = await luna.destroy({
+      where: { idLuna }
+    });
+
+    if (!eliminado) {
+      return res.status(404).json({
+        message: 'Registro no encontrado'
+      });
     }
 
-    res.json({ mensaje: 'Registro de luna eliminado lógicamente' });
-
+    res.json({
+      message: 'Registro eliminado correctamente (soft delete)'
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error en soft delete' });
+    res.status(500).json({
+      message: 'Error al eliminar el registro'
+    });
   }
 };
 
