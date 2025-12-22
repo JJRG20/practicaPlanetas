@@ -3,9 +3,10 @@ const { planeta, luna } = require('../models');
 exports.getAllplaneta = async (req, res) => {
   try {
     const data = await planeta.findAll({
-      include: {
-        model: luna
-      }
+      include: [{
+        model: luna,
+        required: false
+      }]
     });
 
     res.json(data);
@@ -23,9 +24,10 @@ exports.getplanetaByidPlanet = async (req, res) => {
     const { idPlanet } = req.params;
 
     const registro = await planeta.findByPk(idPlanet, {
-      include: {
-        model: luna
-      }
+      include: [{
+        model: luna,
+        required: false
+      }]
     });
 
     if (!registro) {
@@ -150,44 +152,27 @@ exports.deleteplaneta = async (req, res) => {
 };
 
 exports.softDeleteplaneta = async (req, res) => {
-  const idPlanet = Number(req.params.idPlanet);
-
-  if (!Number.isInteger(idPlanet)) {
-    return res.status(400).json({ error: 'ID inválido' });
-  }
-
-  const connection = await sistemaplanetas.getConnection();
-
   try {
-    await connection.beginTransaction();
+    const { idPlanet } = req.params;
 
-    // Soft delete planeta
-    const [resplaneta] = await connection.query(
-      'UPDATE planeta SET deletedAt = NOW() WHERE idPlanet = ? AND deletedAt IS NULL',
-      [idPlanet]
-    );
+    const eliminado = await planeta.destroy({
+      where: { idPlanet }
+    });
 
-    if (resplaneta.affectedRows === 0) {
-      await connection.rollback();
-      return res.status(404).json({ error: 'Registro no encontrado o ya eliminado' });
+    if (!eliminado) {
+      return res.status(404).json({
+        message: 'Registro no encontrado'
+      });
     }
 
-    // Soft delete luna asociadas
-    await connection.query(
-      'UPDATE luna SET deletedAt = NOW() WHERE idPlanet = ? AND deletedAt IS NULL',
-      [idPlanet]
-    );
-
-    await connection.commit();
-
-    res.json({ mensaje: 'Soft delete aplicado a planeta y luna asociadas' });
-
+    res.json({
+      message: 'Registro eliminado correctamente (soft delete)'
+    });
   } catch (error) {
-    await connection.rollback();
     console.error(error);
-    res.status(500).json({ error: 'Error en soft delete' });
-  } finally {
-    connection.release();
+    res.status(500).json({
+      message: 'Error al eliminar el registro'
+    });
   }
 };
 
