@@ -50,30 +50,32 @@ exports.createluna = async (req, res) => {
 };
 
 exports.deleteluna = async (req, res) => {
-  const idLuna = Number(req.params.idLuna);
-
-  if (!Number.isInteger(idLuna)) {
-    return res.status(400).json({ error: 'ID inválido' });
-  }
-
   try {
-    const [result] = await sistemaplanetas.query(
-      'DELETE FROM luna WHERE idLuna = ?',
-      [idLuna]
-    );
+    const { idLuna } = req.params;
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Registro no encontrado' });
+    // Buscar incluso si está soft-deleted
+    const registroL = await luna.findByPk(idLuna, { paranoid: false });
+
+    if (!registroL) {
+      return res.status(404).json({
+        message: 'Registro no existe'
+      });
     }
 
+    await luna.destroy({
+      where: { idLuna },
+      force: true
+    });
+
     res.json({
-      mensaje: 'Registro de luna eliminado',
-      idLuna
+      message: 'Registro eliminado permanentemente'
     });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al eliminar registro' });
+    res.status(500).json({
+      message: 'Error al eliminar definitivamente'
+    });
   }
 };
 

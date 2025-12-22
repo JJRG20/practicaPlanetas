@@ -112,29 +112,32 @@ exports.updatelunaRelation = async (req, res) => {
 };
 
 exports.deleteplaneta = async (req, res) => {
-  const idPlanet = Number(req.params.idPlanet);
-
-  if (!Number.isInteger(idPlanet)) {
-    return res.status(400).json({ error: 'ID inválido' });
-  }
-
   try {
-    const [result] = await sistemaplanetas.query(
-      'DELETE FROM planeta WHERE idPlanet = ?',
-      [idPlanet]
-    );
+    const { idPlanet } = req.params;
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Registro no encontrado' });
+    // Buscar incluso si está soft-deleted
+    const registroP = await planeta.findByPk(idPlanet, { paranoid: false });
+
+    if (!registroP) {
+      return res.status(404).json({
+        message: 'Registro no existe'
+      });
     }
 
+    await planeta.destroy({
+      where: { idPlanet },
+      force: true
+    });
+
     res.json({
-      mensaje: 'Registro de planeta y sus lunas eliminado correctamente',
+      message: 'Registro eliminado permanentemente'
     });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al eliminar registro' });
+    res.status(500).json({
+      message: 'Error al eliminar definitivamente'
+    });
   }
 };
 
