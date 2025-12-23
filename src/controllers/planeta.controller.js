@@ -5,6 +5,7 @@ exports.getAllplaneta = async (req, res) => {
     const data = await planeta.findAll({
       include: [{
         model: luna,
+        as: 'luna',
         required: false
       }]
     });
@@ -26,6 +27,7 @@ exports.getplanetaByidPlanet = async (req, res) => {
     const registro = await planeta.findByPk(idPlanet, {
       include: [{
         model: luna,
+        as: 'luna',
         required: false
       }]
     });
