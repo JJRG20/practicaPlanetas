@@ -27,6 +27,22 @@ exports.reporteCount = async (req, res) => {
       ? parseFloat(req.query.maxtime)
       : null;
 
+    const mindiameter = req.query.mindiameter
+      ? parseFloat(req.query.mindiameter)
+      : null;
+
+    const maxdiameter = req.query.maxdiameter
+      ? parseFloat(req.query.maxdiameter)
+      : null;
+
+    const minsunDist = req.query.minsunDist
+      ? parseFloat(req.query.minsunDist)
+      : null;
+
+    const maxsunDist = req.query.maxsunDist
+      ? parseFloat(req.query.maxsunDist)
+      : null;
+
     const whereplaneta = {};
 
     if (minweight !== null) {
@@ -57,6 +73,34 @@ exports.reporteCount = async (req, res) => {
       };
     }
 
+    if (mindiameter !== null) {
+      whereplaneta.diameter = {
+        ...(whereplaneta.diameter || {}),
+        [Op.gte]: mindiameter
+      };
+    }
+
+    if (maxdiameter !== null) {
+      whereplaneta.diameter = {
+        ...(whereplaneta.diameter || {}),
+        [Op.lte]: maxdiameter
+      };
+    }
+
+    if (minsunDist !== null) {
+      whereplaneta.sunDist = {
+        ...(whereplaneta.sunDist || {}),
+        [Op.gte]: minsunDist
+      };
+    }
+
+    if (maxsunDist !== null) {
+      whereplaneta.sunDist = {
+        ...(whereplaneta.sunDist || {}),
+        [Op.lte]: maxsunDist
+      };
+    }
+
     // Construir dinámicamente el HAVING
     const havingConditions = {};
 
@@ -79,7 +123,9 @@ exports.reporteCount = async (req, res) => {
       attributes: [
         'idPlanet',
         'name',
+        'diameter',
         'weight',
+        'sunDist',
         'time',
         [fn('COUNT', col('luna.idPlanet')), 'totalluna']
       ],
