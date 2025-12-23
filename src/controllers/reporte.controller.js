@@ -19,6 +19,14 @@ exports.reporteCount = async (req, res) => {
       ? parseFloat(req.query.maxweight)
       : null;
 
+    const mintime = req.query.mintime
+      ? parseFloat(req.query.mintime)
+      : null;
+
+    const maxtime = req.query.maxtime
+      ? parseFloat(req.query.maxtime)
+      : null;
+
     const whereplaneta = {};
 
     if (minweight !== null) {
@@ -32,6 +40,20 @@ exports.reporteCount = async (req, res) => {
       whereplaneta.weight = {
         ...(whereplaneta.weight || {}),
         [Op.lte]: maxweight
+      };
+    }
+
+    if (mintime !== null) {
+      whereplaneta.time = {
+        ...(whereplaneta.time || {}),
+        [Op.gte]: mintime
+      };
+    }
+
+    if (maxtime !== null) {
+      whereplaneta.time = {
+        ...(whereplaneta.time || {}),
+        [Op.lte]: maxtime
       };
     }
 
@@ -58,6 +80,7 @@ exports.reporteCount = async (req, res) => {
         'idPlanet',
         'name',
         'weight',
+        'time',
         [fn('COUNT', col('luna.idPlanet')), 'totalluna']
       ],
       include: [
