@@ -2,11 +2,13 @@ const planeta = require('./planeta');
 const luna = require('./luna');
 
 planeta.hasMany(luna, {
-  foreignKey: 'idPlanet'
+  foreignKey: 'idPlanet',
+  as: 'luna'
 });
 
 luna.belongsTo(planeta, {
-  foreignKey: 'idPlanet'
+  foreignKey: 'idPlanet',
+  as: 'planeta'
 });
 
 module.exports = {

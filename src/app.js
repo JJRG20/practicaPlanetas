@@ -3,7 +3,7 @@ const cors = require('cors');
 
 const planetaRoutes = require('./routes/planeta.routes');
 const lunaRoutes = require('./routes/luna.routes');
-const reporteRoutes = require('.routes/reporte.routes');
+const reporteRoutes = require('./routes/reporte.routes');
 
 const app = express();
 
