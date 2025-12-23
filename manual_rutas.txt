@@ -17,3 +17,10 @@ router.delete('/:idLuna', lunaController.deleteluna); // Eliminar permanentement
 router.patch('/:idLuna/soft-delete', lunaController.softDeleteluna); // Ocultar una luna (soft-delete)
 router.patch('/:idLuna/restore', lunaController.restoreluna); // Restaurar una luna (soft-delete NULL)
 router.put('/:idLuna', lunaController.updateluna); // Modificar la información de una luna
+
+reporte.routes
+
+router.get('/idPlanet', reporteController.reporteCount); // Reporte de planetas con filtros
+// idPlanet?minluna & idPlanet?maxluna: Filtro por mínimo y máximo número de lunas asociadas.
+// idPlanet?minweight & idPlanet?maxweight: Filtro por mínimo y máximo peso de los planetas.
+// idPlanet?mintime & idPlanet?maxtime: Filtro por mínimo y máximo número de días de órbita alrededor del sol.
