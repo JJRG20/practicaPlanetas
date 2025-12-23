@@ -3,6 +3,7 @@ const router = express.Router();
 const reporteController = require('../controllers/reporte.controller');
 
 // router.get('/idPlanet', reporteController.reporteMinluna);
-router.get('/idPlanet', reporteController.reporteCountlunas);
+// router.get('/idPlanet', reporteController.reporteCountlunas);
+router.get('/idPlanet', reporteController.reporteCount);
 
 module.exports = router;
