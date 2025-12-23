@@ -1,0 +1,19 @@
+planeta.routes 
+
+router.get('/', planetaController.getAllplaneta); // Vista de todos los planetas (más sus lunas asociadas)
+router.get('/:idPlanet', planetaController.getplanetaByidPlanet); // Vista de un planeta específico (más sus lunas asociadas)
+router.post('/', planetaController.createplaneta); // Crear un planeta
+router.patch('/:idPlanet/luna/:idLuna', planetaController.updatelunaRelation); // Cambiar el idPlanet de una luna
+router.delete('/:idPlanet', planetaController.deleteplaneta); // Eliminar permanentemente un planeta (junto con sus lunas asociadas)
+router.patch('/:idPlanet/soft-delete', planetaController.softDeleteplaneta); // Ocultar un planeta (soft-delete)
+router.patch('/:idPlanet/restore', planetaController.restoreplaneta); // Restaurar un planeta (soft-delete NULL)
+router.put('/:idPlanet', planetaController.updateplaneta); // Modificar la información de un planeta
+
+luna.routes
+
+router.get('/:idLuna', lunaController.getlunaByidLuna); // Vista de una luna en específico
+router.post('/', lunaController.createluna); // Crear una luna
+router.delete('/:idLuna', lunaController.deleteluna); // Eliminar permanentemente una luna
+router.patch('/:idLuna/soft-delete', lunaController.softDeleteluna); // Ocultar una luna (soft-delete)
+router.patch('/:idLuna/restore', lunaController.restoreluna); // Restaurar una luna (soft-delete NULL)
+router.put('/:idLuna', lunaController.updateluna); // Modificar la información de una luna
