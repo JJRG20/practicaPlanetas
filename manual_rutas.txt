@@ -1,28 +1,34 @@
 planeta.routes 
 
-router.get('/', planetaController.getAllplaneta); // Vista de todos los planetas (más sus lunas asociadas)
-router.get('/:idPlanet', planetaController.getplanetaByidPlanet); // Vista de un planeta específico (más sus lunas asociadas)
-router.post('/', planetaController.createplaneta); // Crear un planeta
-router.patch('/:idPlanet/luna/:idLuna', planetaController.updatelunaRelation); // Cambiar el idPlanet de una luna
-router.delete('/:idPlanet', planetaController.deleteplaneta); // Eliminar permanentemente un planeta (junto con sus lunas asociadas)
-router.patch('/:idPlanet/soft-delete', planetaController.softDeleteplaneta); // Ocultar un planeta (soft-delete)
-router.patch('/:idPlanet/restore', planetaController.restoreplaneta); // Restaurar un planeta (soft-delete NULL)
-router.put('/:idPlanet', planetaController.updateplaneta); // Modificar la información de un planeta
+router.get('/', authenticate, allowRoles('admin', 'astro'), planetaController.getAllplaneta); // Vista de todos los planetas (más sus lunas asociadas)
+router.get('/:idPlanet', authenticate, allowRoles('admin', 'astro'), planetaController.getplanetaByidPlanet); // Vista de un planeta específico (más sus lunas asociadas)
+router.post('/', authenticate, allowRoles('admin'), planetaController.createplaneta); // Crear un planeta
+router.patch('/:idPlanet/luna/:idLuna', authenticate, allowRoles('admin'), planetaController.updatelunaRelation); // Cambiar el idPlanet de una luna
+router.delete('/:idPlanet', authenticate, allowRoles('admin'), planetaController.deleteplaneta); // Eliminar permanentemente un planeta (junto con sus lunas asociadas)
+router.patch('/:idPlanet/soft-delete', authenticate, allowRoles('admin'), planetaController.softDeleteplaneta); // Ocultar un planeta (soft-delete)
+router.patch('/:idPlanet/restore', authenticate, allowRoles('admin'), planetaController.restoreplaneta); // Restaurar un planeta (soft-delete NULL)
+router.put('/:idPlanet', authenticate, allowRoles('admin'), planetaController.updateplaneta); // Modificar la información de un planeta
 
 luna.routes
 
-router.get('/:idLuna', lunaController.getlunaByidLuna); // Vista de una luna en específico
-router.post('/', lunaController.createluna); // Crear una luna
-router.delete('/:idLuna', lunaController.deleteluna); // Eliminar permanentemente una luna
-router.patch('/:idLuna/soft-delete', lunaController.softDeleteluna); // Ocultar una luna (soft-delete)
-router.patch('/:idLuna/restore', lunaController.restoreluna); // Restaurar una luna (soft-delete NULL)
-router.put('/:idLuna', lunaController.updateluna); // Modificar la información de una luna
+router.get('/:idLuna', authenticate, allowRoles('admin', 'astro'), lunaController.getlunaByidLuna); // Vista de una luna en específico
+router.post('/', authenticate, allowRoles('admin'), lunaController.createluna); // Crear una luna
+router.delete('/:idLuna', authenticate, allowRoles('admin'), lunaController.deleteluna); // Eliminar permanentemente una luna
+router.patch('/:idLuna/soft-delete', authenticate, allowRoles('admin'), lunaController.softDeleteluna); // Ocultar una luna (soft-delete)
+router.patch('/:idLuna/restore', authenticate, allowRoles('admin'), lunaController.restoreluna); // Restaurar una luna (soft-delete NULL)
+router.put('/:idLuna', authenticate, allowRoles('admin'), lunaController.updateluna); // Modificar la información de una luna
 
 reporte.routes
 
-router.get('/idPlanet', reporteController.reporteCount); // Reporte de planetas con filtros
+router.get('/idPlanet', authenticate, allowRoles('admin', 'astro'), reporteController.reporteCount); // Reporte de planetas con filtros
 // idPlanet?minluna & idPlanet?maxluna: Filtro por mínimo y máximo número de lunas asociadas.
 // idPlanet?mindiameter & idPlanet?maxdiameter: Filtro por mínimo y máximo diametro de los planetas.
 // idPlanet?minweight & idPlanet?maxweight: Filtro por mínimo y máximo peso de los planetas.
 // idPlanet?minsunDist & idPlanet?maxsunDist: Filtro por mínima y máxima distancia de la órbita al sol.
 // idPlanet?mintime & idPlanet?maxtime: Filtro por mínimo y máximo número de días de órbita alrededor del sol.
+
+auth.routes
+router.post('/login', authController.login); // Autentificar el usuario y recibir token.
+
+users.routes
+router.post('/',authenticate, allowRoles('admin'), usersController.createUser); // Crear usuarios (solo admin)
