@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const planeta = require('./planeta');
 const luna = require('./luna');
 const User = require('./user');
