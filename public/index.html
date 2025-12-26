@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inicio</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<h1>Mi Aplicación</h1>
+
+<div id="public">
+  <p>No has iniciado sesión</p>
+  <a href="login.html">Login</a>
+</div>
+
+<div id="private" style="display:none;">
+  <p>Bienvenido <span id="username"></span></p>
+
+  <div id="astro-options">
+    <h3>Opciones Astrónomo</h3>
+    <button>Ver datos</button>
+  </div>
+
+  <div id="admin-options">
+    <h3>Opciones Administrador</h3>
+    <button>Ver datos</button>
+    <button>Crear usuario</button>
+    <button>Eliminar</button>
+  </div>
+
+  <button id="logout">Logout</button>
+</div>
+
+<script src="js/index.js"></script>
+</body>
+</html>
