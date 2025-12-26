@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const planetaRoutes = require('./routes/planeta.routes');
 const lunaRoutes = require('./routes/luna.routes');
@@ -20,6 +21,12 @@ app.use('/api/reporte', reporteRoutes);
 
 app.use('/api/users', usersRoutes);
 app.use('/api/auth', authRoutes);
+
+// FRONTEND
+app.use(express.static(path.join(__dirname, '../public')));
+
+// API
+app.use('/api', require('./routes'));
 
 module.exports = app;
 
