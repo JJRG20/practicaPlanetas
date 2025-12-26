@@ -1,23 +1,14 @@
-export async function apiFetch(url, options = {}) {
+function authHeaders() {
   const token = localStorage.getItem('token');
-
-  const headers = {
+  return {
     'Content-Type': 'application/json',
-    ...(options.headers || {})
+    'Authorization': `Bearer ${token}`
   };
+}
 
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-
-  const res = await fetch(url, {
-    ...options,
-    headers
+async function getplaneta() {
+  const res = await fetch('http://localhost:3000/api/planeta', {
+    headers: authHeaders()
   });
-
-  if (!res.ok) {
-    throw new Error('Error en la petición');
-  }
-
   return res.json();
 }
