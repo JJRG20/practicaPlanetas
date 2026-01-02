@@ -2,11 +2,15 @@ const { planeta, luna } = require('../models');
 
 exports.getAllplaneta = async (req, res) => {
   try {
+    const isAdmin = req.user.role === 'admin';
+
     const data = await planeta.findAll({
+      paranoid: !isAdmin, // admin ve eliminados, astro no
       include: [{
         model: luna,
         as: 'luna',
-        required: false
+        required: false,
+        paranoid: !isAdmin
       }]
     });
 
@@ -22,13 +26,17 @@ exports.getAllplaneta = async (req, res) => {
 
 exports.getplanetaByidPlanet = async (req, res) => {
   try {
+
+    const isAdmin = req.user.role === 'admin';
     const { idPlanet } = req.params;
 
     const registro = await planeta.findByPk(idPlanet, {
+      paranoid: !isAdmin,
       include: [{
         model: luna,
         as: 'luna',
-        required: false
+        required: false,
+        paranoid: !isAdmin
       }]
     });
 

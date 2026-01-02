@@ -4,7 +4,10 @@ exports.getlunaByidLuna = async (req, res) => {
   try {
     const { idLuna } = req.params;
 
+    const isAdmin = req.user.role === 'admin';
+
     const registro = await luna.findByPk(idLuna, {
+      paranoid: !isAdmin
 
     });
 
